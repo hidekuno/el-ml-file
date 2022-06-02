@@ -6,7 +6,6 @@
 #
 # hidekuno@gmail.com
 #
-import re
 import sys
 import os
 import datetime
@@ -95,9 +94,6 @@ def makeRef(dates,messages):
         filename = rec[0]
 
         if rec[1].lower() == "in-reply-to":
-            line = re.sub('>.*$', '>', line)
-            line = re.sub(': .*<',': <',line)
-            line = re.sub(' from .*$', '', line)
             irt = line.split(' ')[1:]
 
             if irt[0][0] == '<' and irt[-1][-1] == '>':
@@ -111,10 +107,13 @@ def makeRef(dates,messages):
 
         if rec[1].lower() == "references":
             ref = line.split(' ')[1:]
+
             if len(ref) < 1 or ref[0] == 'Your' or ',' in line:
                 pass
             elif ref[-1][0] == '<':
                 set_ref(ref[-1],messages,filename)
+            elif ref[-1][-1] == '>':
+                set_ref(" ".join(ref[-2:]),messages,filename)
     fd.close()
 
 recover_buffer = []
