@@ -128,7 +128,7 @@ if __name__ == "__main__":
     dates, messages = makeMessages()
     makeRef(dates,messages)
 
-    top = Tree(Message("root"))
+    top = Tree(Message(args.ml))
 
     for k in mails.keys():
         if mails[k].filename in cache:
