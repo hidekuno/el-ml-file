@@ -35,13 +35,15 @@
   "f"  'ml-file-link)
 (define-key ml-file-mode-map
   "q" 'kill-current-buffer)
+(define-key ml-file-mode-map
+  "g" 'grep-word)
 
 (define-key ml-file-detail-mode-map
   "q" 'kill-current-buffer)
 (define-key ml-file-detail-mode-map
   "\C-m" 'kill-current-buffer)
 
-;; callback routine
+;; file view
 (defun ml-file-link()
   (interactive)
   (unless (= 1 (line-number-at-pos))
@@ -52,6 +54,17 @@
     (setq e (- (point) 1))
     (find-file-read-only (buffer-substring-no-properties s e))
     (ml-file-detail-mode)))
+
+;; grep
+(defun grep-word(&optional arg)
+  (interactive "P")
+  (let ((word ""))
+    (while (string= word "")
+      (setq word (read-string "search word: ")))
+    (grep (concat "grep -r -i --color -nH --null -e '" word "' .")))
+  (switch-to-buffer "*grep*")
+  (rename-buffer "ml-grep")
+  (delete-window))
 
 ;; starup routine
 (defun ml-file(&optional arg)
