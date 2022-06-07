@@ -24,6 +24,14 @@
   "Major mode for ml-file-detail.
 \\{ml-file-detail-mode-map}")
 
+(define-derived-mode ml-grep-mode
+  text-mode
+  "Major mode for ml-grep.
+\\{ml-file-grep-mode-map}"
+  (setq hl-line-face 'underline)
+  (hl-line-mode)
+  (setq case-fold-search t))
+
 ;;(set-face-attribute hl-line-face nil :underline t)
 ;;(put-text-property 1 10 'face 'underline)
 ;;(put-text-property 1 10 'face 'default)
@@ -36,12 +44,19 @@
 (define-key ml-file-mode-map
   "q" 'kill-current-buffer)
 (define-key ml-file-mode-map
-  "g" 'grep-word)
+  "g" 'ml-grep-word)
 
 (define-key ml-file-detail-mode-map
   "q" 'kill-current-buffer)
 (define-key ml-file-detail-mode-map
   "\C-m" 'kill-current-buffer)
+
+(define-key ml-grep-mode-map
+  "\C-m" 'ml-grep-link)
+(define-key ml-grep-mode-map
+  "f"  'ml-grep-link)
+(define-key ml-grep-mode-map
+  "q" 'kill-current-buffer)
 
 ;; file view
 (defun ml-file-link()
@@ -55,16 +70,45 @@
     (find-file-read-only (buffer-substring-no-properties s e))
     (ml-file-detail-mode)))
 
+;; file view
+(defun ml-grep-link()
+  (interactive)
+  (beginning-of-line)
+
+  ;; filename
+  (setq s (point))
+  (search-forward ":")
+  (setq e (- (point) 1))
+  (setq filename (buffer-substring-no-properties s e))
+
+  ;; line number
+  (setq s (point))
+  (search-forward ":")
+  (setq e (- (point) 1))
+  (setq line (string-to-number (buffer-substring-no-properties s e)))
+
+  ;; buffer name
+  (setq ml-buffer-name (replace-regexp-in-string "^.*/" "" filename))
+  (find-file-read-only filename)
+
+  (switch-to-buffer ml-buffer-name)
+  (goto-line line)
+  (ml-file-detail-mode))
+
 ;; grep
-(defun grep-word(&optional arg)
+(defun ml-grep-word(&optional arg)
   (interactive "P")
   (let ((word ""))
     (while (string= word "")
       (setq word (read-string "search word: ")))
-    (grep (concat "grep -r -i --color -nH --null -e '" word "' .")))
-  (switch-to-buffer "*grep*")
-  (rename-buffer "ml-grep")
-  (delete-window))
+
+    (switch-to-buffer "ml-grep")
+    (call-process "grep" nil t nil "-r" "-i" "-nH" "-e" word "."))
+  (goto-line 1)
+  (replace-string "\r" "")
+  (goto-line 1)
+  (toggle-read-only)
+  (ml-grep-mode))
 
 ;; starup routine
 (defun ml-file(&optional arg)
