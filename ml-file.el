@@ -106,6 +106,7 @@
     (call-process "grep" nil t nil "-r" "-i" "-nH" "-e" word "."))
   (goto-line 1)
   (replace-string "\r" "")
+  (sort-lines nil (point-min) (point-max))
   (goto-line 1)
   (toggle-read-only)
   (ml-grep-mode))
