@@ -101,15 +101,20 @@
   (let ((word ""))
     (while (string= word "")
       (setq word (read-string "search word: ")))
-
     (switch-to-buffer "ml-grep")
     (call-process "grep" nil t nil "-r" "-i" "-nH" "-e" word "."))
-  (goto-line 1)
-  (replace-string "\r" "")
-  (sort-lines nil (point-min) (point-max))
-  (goto-line 1)
-  (toggle-read-only)
-  (ml-grep-mode))
+
+  (cond ((= 0 (buffer-size))
+         (toggle-read-only)
+         (ml-grep-mode)
+         (message "No matches found"))
+        (t
+         (goto-line 1)
+         (replace-string "\r" "")
+         (sort-lines nil (point-min) (point-max))
+         (goto-line 1)
+         (toggle-read-only)
+         (ml-grep-mode))))
 
 ;; starup routine
 (defun ml-file(&optional arg)
