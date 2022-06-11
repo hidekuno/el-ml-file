@@ -50,6 +50,8 @@
   "q" 'kill-current-buffer)
 (define-key ml-file-detail-mode-map
   "\C-m" 'kill-current-buffer)
+(define-key ml-file-detail-mode-map
+  " " 'scroll-up-command)
 
 (define-key ml-grep-mode-map
   "\C-m" 'ml-grep-link)
@@ -102,7 +104,12 @@
     (while (string= word "")
       (setq word (read-string "search word: ")))
     (switch-to-buffer "ml-grep")
-    (call-process "grep" nil t nil "-r" "-i" "-nH" "-e" word "."))
+    (call-process "grep" nil t nil
+                  "-r" "-i" "-nH"
+                  "--exclude=idx1"
+                  "--exclude=idx2"
+                  "-e"
+                  word "."))
 
   (cond ((= 0 (buffer-size))
          (toggle-read-only)
