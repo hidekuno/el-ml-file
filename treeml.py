@@ -8,7 +8,6 @@
 #
 import sys
 import os
-import datetime
 from dateutil import parser
 from pytz import timezone
 import argparse
@@ -66,7 +65,6 @@ def makeMessages():
     messages = {}
 
     fd = open('idx1','r')
-
     for line in fd:
         line = line.rstrip()
         rec = line.split(':')
@@ -82,7 +80,6 @@ def makeMessages():
             messages[ml.messageId] = ml
         if rec[1].lower() == "subject":
             ml.subject = line.split(":Subject: ")[1]
-
     fd.close()
     return dates,messages
 
