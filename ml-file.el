@@ -9,6 +9,7 @@
 ;; global variable
 (defvar-local ml-prog-name "ml-file")
 (defvar-local ml-tree-prog "./treeml.py") ;; install to /usr/local/bin
+(setq ml-name-dir "~")
 
 ;;; major mode
 (define-derived-mode ml-file-mode
@@ -52,6 +53,8 @@
   "\C-m" 'kill-current-buffer)
 (define-key ml-file-detail-mode-map
   " " 'scroll-up-command)
+(define-key ml-file-detail-mode-map
+  "g" 'ml-file-region-link)
 
 (define-key ml-grep-mode-map
   "\C-m" 'ml-grep-link)
@@ -59,6 +62,27 @@
   "f"  'ml-grep-link)
 (define-key ml-grep-mode-map
   "q" 'kill-current-buffer)
+
+;; file view by region to mail header
+(defun ml-file-region-link()
+  (interactive)
+  (setq ref-id (buffer-substring-no-properties (region-beginning)(region-end)))
+  (find-file-read-only (concat ml-name-dir "/idx1"))
+  (goto-line 1)
+
+  (cond
+   ((search-forward ref-id nil t)
+    (beginning-of-line)
+    (setq s (point))
+    (search-forward ":")
+    (setq e (- (point) 1))
+    (setq data-file (buffer-substring-no-properties s e))
+    (kill-current-buffer)
+    (find-file-read-only (concat ml-name-dir "/" data-file))
+    (ml-file-detail-mode))
+   (t
+    (message "No match message file")
+    (kill-current-buffer))))
 
 ;; file view
 (defun ml-file-link()
@@ -130,7 +154,8 @@
     (while (string= ml-name "")
       (setq ml-name (read-string "Mailing List Name: ")))
 
-    (cd (concat "~/" ml-name))
+    (setq ml-name-dir (concat "~/" ml-name))
+    (cd ml-name-dir)
     (switch-to-buffer ml-prog-name)
     (ml-file-mode)
     (call-process ml-tree-prog nil t nil ml-name)
