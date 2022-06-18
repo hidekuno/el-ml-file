@@ -9,6 +9,8 @@
 ;; global variable
 (defvar-local ml-prog-name "ml-file")
 (defvar-local ml-tree-prog "./treeml.py") ;; install to /usr/local/bin
+(defvar-local ml-grep-buffer-name "ml-grep")
+
 (setq ml-name-dir "~")
 
 ;;; major mode
@@ -46,6 +48,10 @@
   "q" 'kill-current-buffer)
 (define-key ml-file-mode-map
   "g" 'ml-grep-word)
+(define-key ml-file-mode-map
+  "b" 'ml-grep-back)
+(define-key ml-file-mode-map
+  " " 'scroll-up-command)
 
 (define-key ml-file-detail-mode-map
   "q" 'kill-current-buffer)
@@ -62,6 +68,22 @@
   "f"  'ml-grep-link)
 (define-key ml-grep-mode-map
   "q" 'kill-current-buffer)
+(define-key ml-grep-mode-map
+  "g" 'ml-switch-threads-tree)
+(define-key ml-grep-mode-map
+  " " 'scroll-up-command)
+
+;; switch buffer threads-tree
+(defun ml-switch-threads-tree()
+  (interactive)
+  (beginning-of-line)
+  (setq s (point))
+  (search-forward ":")
+  (setq e (- (point) 1))
+  (setq filename (buffer-substring-no-properties s e))
+  (switch-to-buffer ml-prog-name)
+  (goto-line 1)
+  (search-forward filename))
 
 ;; file view by region to mail header
 (defun ml-file-region-link()
@@ -127,7 +149,8 @@
   (let ((word ""))
     (while (string= word "")
       (setq word (read-string "search word: ")))
-    (switch-to-buffer "ml-grep")
+    (if (get-buffer ml-grep-buffer-name)(kill-buffer ml-grep-buffer-name))
+    (switch-to-buffer ml-grep-buffer-name)
     (call-process "grep" nil t nil
                   "-r" "-i" "-nH"
                   "--exclude=idx1"
@@ -146,6 +169,14 @@
          (goto-line 1)
          (toggle-read-only)
          (ml-grep-mode))))
+
+;; back ml-grep
+(defun ml-grep-back()
+  (interactive)
+  (cond ((get-buffer ml-grep-buffer-name)
+         (switch-to-buffer ml-grep-buffer-name))
+        (t
+         (message "No grep results"))))
 
 ;; starup routine
 (defun ml-file(&optional arg)
