@@ -20,8 +20,8 @@ sudo cp el-ml-file/treeml.py /usr/local/bin/.
 ### create index
 ```
 cd ${HOME}
-tar -xvfz <ml-archive-name>.tar.gz .
-cd <ml-archive-name>
+tar -xvfz ${ml-archive-name}.tar.gz .
+cd ${ml-archive-name}
 ~/el-ml-file/create_idx.sh
 ```
 
