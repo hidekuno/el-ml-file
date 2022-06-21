@@ -41,21 +41,13 @@ def walk(tree, indent=0):
     for rec in tree.children:
         walk(rec, indent+1)
 
-def check_invalid(k):
-    return mails[k].references and not mails[k].references in cache
-
-def print_ref(key,ht,filename):
-    if key in ht:
-        print(filename + ':References:' + ht[key].filename)
-
 def set_ref(key,ht,filename):
     if key in ht:
         if not mails[filename].references:
             mails[filename].references = ht[key].filename
 
 def adjust_jst(d):
-    return str(parser.parse(d,tzinfos={"JST": 9 * 3600,
-                                       "JDT": 9 * 3600,
+    return str(parser.parse(d,tzinfos={"JDT": 9 * 3600,
                                        "EST": -5 * 3600,
                                        "UT": 0 * 3600,})
                .astimezone(timezone('Asia/Tokyo')))
@@ -113,7 +105,21 @@ def makeRef(dates,messages):
                 set_ref(" ".join(ref[-2:]),messages,filename)
     fd.close()
 
-recover_buffer = []
+# create tree recursive
+def create_tree(rec,top):
+    if not rec.references in cache:
+        if rec.references:
+            create_tree(mails[rec.references],top)
+
+    if not rec.filename in cache:
+        if rec.references:
+            parent = cache[rec.references]
+            cache[rec.filename] = Tree(rec, parent)
+            parent.add(cache[rec.filename])
+        else:
+            cache[rec.filename] = Tree(rec, top)
+            top.add(cache[rec.filename])
+
 if __name__ == "__main__":
 
     arg_parser = argparse.ArgumentParser()
@@ -124,28 +130,8 @@ if __name__ == "__main__":
 
     dates, messages = makeMessages()
     makeRef(dates,messages)
-
     top = Tree(Message(args.ml))
 
     for k in mails.keys():
-        if mails[k].filename in cache:
-            continue
-
-        if check_invalid(k):
-            recover_buffer.append(mails[k])
-            continue
-
-        if mails[k].references:
-            parent = cache[mails[k].references]
-            cache[mails[k].filename] = Tree(mails[k], parent)
-            parent.add(cache[mails[k].filename])
-        else:
-            cache[mails[k].filename] = Tree(mails[k], top)
-            top.add(cache[mails[k].filename])
-
-    for rec in recover_buffer:
-        parent = cache[rec.references]
-        cache[rec.filename] = Tree(rec, parent)
-        parent.add(cache[rec.filename])
-
+        create_tree(mails[k],top)
     walk(top)

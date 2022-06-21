@@ -1,7 +1,11 @@
 ;;
 ;; This is the mailing-list file view program by emacs lisp
 ;;
-;; test ml is fuji-ml("http://www.pro.or.jp/~fuji/information/mailing-list.html")
+;; The tested Mailing List is shown below.
+;;
+;;   fuji-ml         (http://www.pro.or.jp/~fuji/information/mailing-list.html)
+;;   ubuntu-jp       (https://lists.ubuntu.com/archives/ubuntu-jp/)
+;;   gauche-devel-jp (https://osdn.net/projects/gauche/lists/archive/devel-jp/)
 ;;
 ;; hidekuno@gmail.com
 ;;

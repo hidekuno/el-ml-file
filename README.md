@@ -17,10 +17,11 @@ git clone https://github.com/hidekuno/el-ml-file
 sudo cp el-ml-file/treeml.py /usr/local/bin/.
 ```
 
+### Get some data and create a file for each article.
+
 ### create index
 ```
 cd ${HOME}
-tar -xvfz ${ml-archive-name}.tar.gz .
 cd ${ml-archive-name}
 ~/el-ml-file/create_idx.sh
 ```
