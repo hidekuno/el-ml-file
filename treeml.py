@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # 1) create index file before run this program
 #    cd ${WHERE}
