@@ -1,13 +1,23 @@
 #!/bin/sh
 
+OS=`uname`
+case $OS in
+    Darwin)
+	if [ -x /usr/local/bin/gsed ]; then
+	    SED=/usr/local/bin/gsed
+	else
+	    exit 1
+	fi
+	;;
+    Linux)
+	SED=/usr/bin/sed
+	;;
+    *)
+	exit 1
+esac
+
 egrep -r -m 3 -i "^(Subject|Message-Id|Date):" . |tr -d '\015'|sort > idx1
 egrep -r -m 2 -i "^(In-Reply-to|References):" .  |tr -d '\015'|sort > idx2
-
-if [ `uname` = 'Darwin' -a -x /usr/local/bin/gsed ]; then
-  SED=/usr/local/bin/gsed
-else
-  SED=/usr/bin/sed
-fi
 
 # maillinkg list was corrected To make the ml-file work
 $SED -i -e 's/Date:\(.*\)jst/Date:\1JST/' \
