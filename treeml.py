@@ -19,7 +19,7 @@ class Message(object):
     def __init__(self,filename):
         self.filename = filename
         self.date = None
-        self.subject = ""
+        self.subject = "(no subject)"
         self.messageId = None
         self.references = None
 
@@ -33,7 +33,7 @@ class Tree(object):
         self.children.append(child)
 
     def printName(self):
-        return self.item.filename  + ' ' + self.item.subject
+        return self.item.filename  + ' ' + (self.item.subject if self.parent else "")
 
 def walk(tree, indent=0):
     print("  " * indent + tree.printName())

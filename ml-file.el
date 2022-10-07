@@ -194,5 +194,17 @@
     (switch-to-buffer ml-prog-name)
     (ml-file-mode)
     (call-process ml-tree-prog nil t nil ml-name)
+
+    (goto-char (point-min))
+    (forward-line)
+    (while (search-forward " " nil t)
+      (beginning-of-line)
+      (re-search-forward "^[ ]*")
+      (setq s (point))
+      (search-forward " ")
+      (setq e (- (point) 1))
+      (put-text-property s e 'invisible t)
+      (end-of-line))
+
     (toggle-read-only)
     (goto-line 1)))
