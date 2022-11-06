@@ -33,4 +33,4 @@ cd ${ml-archive-name}
 M-x load-file ~/el-ml-file/ml-file.el
 M-x ml-file
 ```
-<img src="https://user-images.githubusercontent.com/22115777/172289182-ace767ad-73dc-4e58-ab96-d2c2cfbfe189.png" width=60% height=60%>
+<img src="https://user-images.githubusercontent.com/22115777/199161643-56797a9c-9d34-4539-aa20-d3d61e477f12.png" width=60% height=60%>
