@@ -9,6 +9,8 @@ Mailing List thread viewer by Emacs lisp program
 ### Requirement
 - emacs(>=26.3) is installed.
 - python(>=3.8.10) is installed.
+- python-dateutil(>=2.7.3) is installed.
+- pytz(>= 2019.3) is installed.
 - GNU Awk(>=5.0.1) is installed.
 - GNU sed(>=4.7) is installed.
 
