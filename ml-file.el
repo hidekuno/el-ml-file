@@ -12,10 +12,10 @@
 
 ;; global variable
 (defvar-local ml-prog-name "ml-file")
-(defvar-local ml-tree-prog "./treeml.py") ;; install to /usr/local/bin
+(defvar-local ml-tree-prog "treeml.py") ;; install to /usr/local/bin
 (defvar-local ml-grep-buffer-name "ml-grep")
-
-(setq ml-name-dir "~")
+(defvar-local ml-error-buffer "stderr")
+(defvar ml-name-dir "~")
 
 ;;; major mode
 (define-derived-mode ml-file-mode
@@ -79,7 +79,9 @@
 
 ;; switch buffer threads-tree
 (defun ml-switch-threads-tree()
+  (cd ml-name-dir)
   (interactive)
+
   (beginning-of-line)
   (setq s (point))
   (search-forward ":")
@@ -92,6 +94,8 @@
 ;; file view by region to mail header
 (defun ml-file-region-link()
   (interactive)
+  (cd ml-name-dir)
+
   (setq ref-id (buffer-substring-no-properties (region-beginning)(region-end)))
   (find-file-read-only (concat ml-name-dir "/idx1"))
   (goto-line 1)
@@ -113,6 +117,8 @@
 ;; file view
 (defun ml-file-link()
   (interactive)
+  (cd ml-name-dir)
+
   (unless (= 1 (line-number-at-pos))
     (beginning-of-line)
     (re-search-forward "^[ ]*")
@@ -125,6 +131,8 @@
 ;; file view
 (defun ml-grep-link()
   (interactive)
+  (cd ml-name-dir)
+
   (beginning-of-line)
 
   ;; filename
@@ -150,6 +158,8 @@
 ;; grep
 (defun ml-grep-word(&optional arg)
   (interactive "P")
+  (cd ml-name-dir)
+
   (let ((word ""))
     (while (string= word "")
       (setq word (read-string "search word: ")))
@@ -177,6 +187,8 @@
 ;; back ml-grep
 (defun ml-grep-back()
   (interactive)
+  (cd ml-name-dir)
+
   (cond ((get-buffer ml-grep-buffer-name)
          (switch-to-buffer ml-grep-buffer-name))
         (t
@@ -189,22 +201,27 @@
     (while (string= ml-name "")
       (setq ml-name (read-string "Mailing List Name: ")))
 
-    (setq ml-name-dir (concat "~/" ml-name))
-    (cd ml-name-dir)
-    (switch-to-buffer ml-prog-name)
-    (ml-file-mode)
-    (call-process ml-tree-prog nil t nil ml-name)
-
-    (goto-char (point-min))
-    (forward-line)
-    (while (search-forward " " nil t)
-      (beginning-of-line)
-      (re-search-forward "^[ ]*")
-      (setq s (point))
-      (search-forward " ")
-      (setq e (- (point) 1))
-      (put-text-property s e 'invisible t)
-      (end-of-line))
-
-    (toggle-read-only)
-    (goto-line 1)))
+    (shell-command (concat ml-tree-prog " " ml-name) ml-prog-name ml-error-buffer)
+    (delete-other-windows)
+    (cond
+     ((get-buffer ml-error-buffer)
+      (switch-to-buffer ml-error-buffer)
+      (setq error-message (buffer-string))
+      (kill-buffer)
+      (message error-message))
+     (t
+      (setq ml-name-dir (concat "~/" ml-name))
+      (switch-to-buffer ml-prog-name)
+      (ml-file-mode)
+      (goto-char (point-min))
+      (forward-line)
+      (while (search-forward " " nil t)
+        (beginning-of-line)
+        (re-search-forward "^[ ]*")
+        (setq s (point))
+        (search-forward " ")
+        (setq e (- (point) 1))
+        (put-text-property s e 'invisible t)
+        (end-of-line))
+      (toggle-read-only)
+      (goto-line 1)))))
