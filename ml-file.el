@@ -87,9 +87,13 @@
   (search-forward ":")
   (setq e (- (point) 1))
   (setq filename (buffer-substring-no-properties s e))
-  (switch-to-buffer ml-prog-name)
-  (goto-line 1)
-  (search-forward filename))
+
+  (if (get-buffer ml-prog-name)
+      (progn
+        (switch-to-buffer ml-prog-name)
+        (goto-line 1)
+        (search-forward filename))
+    (message "No ml-file")))
 
 ;; file view by region to mail header
 (defun ml-file-region-link()
