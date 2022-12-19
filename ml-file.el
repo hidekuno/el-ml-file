@@ -191,7 +191,6 @@
            (while (re-search-forward word nil t)
              (setq e (point))
              (setq s (- e (length word)))
-             (message (format "%d %d" s e))
              (overlay-put (make-overlay s e) 'face '(t :inverse-video t)))
 
            (goto-line 1)
