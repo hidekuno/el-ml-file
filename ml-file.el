@@ -3,9 +3,10 @@
 ;;
 ;; The tested Mailing List is shown below.
 ;;
-;;   fuji-ml         (http://www.pro.or.jp/~fuji/information/mailing-list.html)
-;;   ubuntu-jp       (https://lists.ubuntu.com/archives/ubuntu-jp/)
-;;   gauche-devel-jp (https://osdn.net/projects/gauche/lists/archive/devel-jp/)
+;;   fuji-ml          (http://www.pro.or.jp/~fuji/information/mailing-list.html)
+;;   ubuntu-jp        (https://lists.ubuntu.com/archives/ubuntu-jp/)
+;;   gauche-devel-jp  (https://osdn.net/projects/gauche/lists/archive/devel-jp/)
+;;   freebsd-users-jp (https://lists.freebsd.org/pipermail/freebsd-users-jp/)
 ;;
 ;; hidekuno@gmail.com
 ;;
@@ -174,19 +175,27 @@
                   "--exclude=idx1"
                   "--exclude=idx2"
                   "-e"
-                  word "."))
+                  word ".")
 
-  (cond ((= 0 (buffer-size))
-         (toggle-read-only)
-         (ml-grep-mode)
-         (message "No matches found"))
-        (t
-         (goto-line 1)
-         (replace-string "\r" "")
-         (sort-lines nil (point-min) (point-max))
-         (goto-line 1)
-         (toggle-read-only)
-         (ml-grep-mode))))
+    (cond ((= 0 (buffer-size))
+           (toggle-read-only)
+           (ml-grep-mode)
+           (message "No matches found"))
+          (t
+           (goto-line 1)
+           (replace-string "\r" "")
+           (sort-lines nil (point-min) (point-max))
+
+           (goto-line 1)
+           (beginning-of-line)
+           (while (re-search-forward word nil t)
+             (setq e (point))
+             (setq s (- e (length word)))
+             (overlay-put (make-overlay s e) 'face '(t :inverse-video t)))
+
+           (goto-line 1)
+           (toggle-read-only)
+           (ml-grep-mode)))))
 
 ;; back ml-grep
 (defun ml-grep-back()
