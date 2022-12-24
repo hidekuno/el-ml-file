@@ -78,17 +78,25 @@
 (define-key ml-grep-mode-map
   " " 'scroll-up-command)
 
+;; get range of search
+(defun ml-range-of-search (str)
+  (setq s (point))
+  (search-forward str)
+  (setq e (- (point) 1))
+  (cons s e))
+
+;; get substring of search
+(defun ml-substring-of-search (str)
+  (let ((range (ml-range-of-search str)))
+    (buffer-substring-no-properties (car range)(cdr range))))
+
 ;; switch buffer threads-tree
 (defun ml-switch-threads-tree()
   (cd ml-name-dir)
   (interactive)
 
   (beginning-of-line)
-  (setq s (point))
-  (search-forward ":")
-  (setq e (- (point) 1))
-  (setq filename (buffer-substring-no-properties s e))
-
+  (setq filename (ml-substring-of-search ":"))
   (if (get-buffer ml-prog-name)
       (progn
         (switch-to-buffer ml-prog-name)
@@ -108,10 +116,8 @@
   (cond
    ((search-forward ref-id nil t)
     (beginning-of-line)
-    (setq s (point))
-    (search-forward ":")
-    (setq e (- (point) 1))
-    (setq data-file (buffer-substring-no-properties s e))
+
+    (setq data-file (ml-substring-of-search ":"))
     (kill-current-buffer)
     (find-file-read-only (concat ml-name-dir "/" data-file))
     (ml-file-detail-mode))
@@ -127,10 +133,7 @@
   (unless (= 1 (line-number-at-pos))
     (beginning-of-line)
     (re-search-forward "^[ ]*")
-    (setq s (point))
-    (search-forward " ")
-    (setq e (- (point) 1))
-    (find-file-read-only (buffer-substring-no-properties s e))
+    (find-file-read-only (ml-substring-of-search " "))
     (ml-file-detail-mode)))
 
 ;; file view
@@ -141,16 +144,10 @@
   (beginning-of-line)
 
   ;; filename
-  (setq s (point))
-  (search-forward ":")
-  (setq e (- (point) 1))
-  (setq filename (buffer-substring-no-properties s e))
+  (setq filename (ml-substring-of-search ":"))
 
   ;; line number
-  (setq s (point))
-  (search-forward ":")
-  (setq e (- (point) 1))
-  (setq line (string-to-number (buffer-substring-no-properties s e)))
+  (setq line (string-to-number (ml-substring-of-search ":")))
 
   ;; buffer name
   (setq ml-buffer-name (replace-regexp-in-string "^.*/" "" filename))
@@ -231,10 +228,8 @@
       (while (search-forward " " nil t)
         (beginning-of-line)
         (re-search-forward "^[ ]*")
-        (setq s (point))
-        (search-forward " ")
-        (setq e (- (point) 1))
-        (put-text-property s e 'invisible t)
+        (setq range (ml-range-of-search " "))
+        (put-text-property (car range) (cdr range) 'invisible t)
         (end-of-line))
       (toggle-read-only)
       (goto-line 1)))))
