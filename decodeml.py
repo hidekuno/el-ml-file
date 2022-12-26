@@ -22,7 +22,7 @@ with open(args.filename, 'rb') as fd:
                     header += tup[0].decode()
             elif type(tup[0]) is str:
                 header += tup[0]
-        print(k + ':', header)
+        print(k + ':', header.replace("\n",' ') if k == "References" else header)
 
     print('')
     for part in msg.walk():
