@@ -16,8 +16,9 @@ case $OS in
 	exit 1
 esac
 
-egrep -r -m 3 -i "^(Subject|Message-Id|Date):" . |tr -d '\015'|sort > idx1
-egrep -r -m 2 -i "^(In-Reply-to|References):" .  |tr -d '\015'|sort > idx2
+rm -f idx1 idx2
+egrep -r -m 4 -i -e "^\s*$" -e "^(Subject|Message-Id|Date):" . |tr -d '\015'|sort > idx1
+egrep -r -m 1 -i -e "^\s*$" -e "^(In-Reply-to:|References:)" . |tr -d '\015'|sed -e '/:$/d' | sort > idx2
 
 # maillinkg list was corrected To make the ml-file work
 $SED -i -e 's/Date:\(.*\)jst/Date:\1JST/' \
