@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 OS=`uname`
 case $OS in
