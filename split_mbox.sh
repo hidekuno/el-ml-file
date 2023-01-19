@@ -1,14 +1,14 @@
-#!/bin/sh 
+#!/bin/bash
 
-if [ $# -ne 1 ]; then
-  echo "Usage: split_mbox.sh file" >&2
+function error_stop() {
+  echo "ERROR: ${BASH_LINENO[0]}行目:" $1 >&2
   exit 1
-fi
+}
+
+[ $# -ne 1 ] && error_stop "Usage: split_mbox.sh file"
+
 FILE=$1
-if [ ! -f $FILE ]; then
-  echo "No such file: $FILE" >&2
-  exit 1
-fi
+[ ! -f $FILE ] && error_stop "No such file: $FILE"
 
 cat $FILE| awk -v cnt=1 '(/^From /){filename=sprintf("%05d",cnt++)}(!/^From /){print $0 >filename}'
 
