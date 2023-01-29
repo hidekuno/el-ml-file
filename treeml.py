@@ -52,7 +52,7 @@ def adjust_jst(d):
                                        "UT": 0 * 3600,})
                .astimezone(timezone('Asia/Tokyo')))
 
-def makeMessages():
+def make_messages():
     dates = {}
     messages = {}
 
@@ -75,7 +75,7 @@ def makeMessages():
 
     return dates,messages
 
-def makeRef(dates,messages):
+def make_ref(dates,messages):
     with open('idx2','r') as fd:
         for line in fd:
             line = line.rstrip()
@@ -119,8 +119,7 @@ def create_tree(rec,top):
             cache[rec.filename] = Tree(rec, top)
             top.add(cache[rec.filename])
 
-if __name__ == "__main__":
-
+def treeml():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('ml', type=str)
     args = arg_parser.parse_args(sys.argv[1:])
@@ -128,8 +127,8 @@ if __name__ == "__main__":
     try:
         os.chdir(os.path.join(os.environ['HOME'], args.ml))
 
-        dates, messages = makeMessages()
-        makeRef(dates,messages)
+        dates, messages = make_messages()
+        make_ref(dates,messages)
         top = Tree(Message(args.ml))
 
         for k in mails.keys():
@@ -138,3 +137,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(e, file=sys.stderr)
         sys.exit(1)
+
+if __name__ == "__main__":
+    treeml()
