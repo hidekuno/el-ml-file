@@ -8,6 +8,9 @@
 ;;   gauche-devel-jp  (https://osdn.net/projects/gauche/lists/archive/devel-jp/)
 ;;   freebsd-users-jp (https://lists.freebsd.org/pipermail/freebsd-users-jp/)
 ;;
+;; Build
+;;   emacs -batch -f batch-byte-compile ml-file.el
+;;
 ;; hidekuno@gmail.com
 ;;
 
@@ -17,6 +20,7 @@
 (defvar-local ml-grep-buffer-name "ml-grep")
 (defvar-local ml-error-buffer "stderr")
 (defvar ml-name-dir "~")
+(defvar hl-line-face)
 
 ;;; major mode
 (define-derived-mode ml-file-mode
@@ -80,10 +84,11 @@
 
 ;; get range of search
 (defun ml-range-of-search (str)
-  (setq s (point))
-  (search-forward str)
-  (setq e (- (point) 1))
-  (cons s e))
+  (let ((s 0)(e 0))
+    (setq s (point))
+    (search-forward str)
+    (setq e (- (point) 1))
+    (cons s e)))
 
 ;; get substring of search
 (defun ml-substring-of-search (str)
@@ -92,38 +97,37 @@
 
 ;; switch buffer threads-tree
 (defun ml-switch-threads-tree()
-  (cd ml-name-dir)
   (interactive)
+  (cd ml-name-dir)
 
   (beginning-of-line)
-  (setq filename (ml-substring-of-search ":"))
-  (if (get-buffer ml-prog-name)
-      (progn
-        (switch-to-buffer ml-prog-name)
-        (goto-line 1)
-        (search-forward filename))
-    (message "No ml-file")))
+  (let ((filename (ml-substring-of-search ":")))
+    (if (get-buffer ml-prog-name)
+        (progn
+          (switch-to-buffer ml-prog-name)
+          (goto-line 1)
+          (search-forward filename))
+      (message "No ml-file"))))
 
 ;; file view by region to mail header
 (defun ml-file-region-link()
   (interactive)
   (cd ml-name-dir)
 
-  (setq ref-id (buffer-substring-no-properties (region-beginning)(region-end)))
-  (find-file-read-only (concat ml-name-dir "/idx1"))
-  (goto-line 1)
+  (let ((ref-id (buffer-substring-no-properties (region-beginning)(region-end))))
+    (find-file-read-only (concat ml-name-dir "/idx1"))
+    (goto-line 1)
 
-  (cond
-   ((search-forward ref-id nil t)
-    (beginning-of-line)
-
-    (setq data-file (ml-substring-of-search ":"))
-    (kill-current-buffer)
-    (find-file-read-only (concat ml-name-dir "/" data-file))
-    (ml-file-detail-mode))
-   (t
-    (message "No match message file")
-    (kill-current-buffer))))
+    (cond
+     ((search-forward ref-id nil t)
+      (beginning-of-line)
+      (let ((data-file (ml-substring-of-search ":")))
+        (kill-current-buffer)
+        (find-file-read-only (concat ml-name-dir "/" data-file))
+        (ml-file-detail-mode)))
+      (t
+       (message "No match message file")
+       (kill-current-buffer)))))
 
 ;; file view
 (defun ml-file-link()
@@ -144,18 +148,17 @@
   (beginning-of-line)
 
   ;; filename
-  (setq filename (ml-substring-of-search ":"))
+  (let* ((filename (ml-substring-of-search ":"))
+        ;; line number
+         (line (string-to-number (ml-substring-of-search ":")))
 
-  ;; line number
-  (setq line (string-to-number (ml-substring-of-search ":")))
+         ;; buffer name
+         (ml-buffer-name (replace-regexp-in-string "^.*/" "" filename)))
+    (find-file-read-only filename)
 
-  ;; buffer name
-  (setq ml-buffer-name (replace-regexp-in-string "^.*/" "" filename))
-  (find-file-read-only filename)
-
-  (switch-to-buffer ml-buffer-name)
-  (goto-line line)
-  (ml-file-detail-mode))
+    (switch-to-buffer ml-buffer-name)
+    (goto-line line)
+    (ml-file-detail-mode)))
 
 ;; grep
 (defun ml-grep-word(&optional arg)
@@ -175,7 +178,7 @@
                   word ".")
 
     (cond ((= 0 (buffer-size))
-           (toggle-read-only)
+           (read-only-mode)
            (ml-grep-mode)
            (message "No matches found"))
           (t
@@ -186,12 +189,11 @@
            (goto-line 1)
            (beginning-of-line)
            (while (re-search-forward word nil t)
-             (setq e (point))
-             (setq s (- e (length word)))
-             (overlay-put (make-overlay s e) 'face '(t :inverse-video t)))
-
+             (let* ((e (point))
+                    (s (- e (length word))))
+               (overlay-put (make-overlay s e) 'face '(t :inverse-video t))))
            (goto-line 1)
-           (toggle-read-only)
+           (read-only-mode)
            (ml-grep-mode)))))
 
 ;; back ml-grep
@@ -216,9 +218,9 @@
     (cond
      ((get-buffer ml-error-buffer)
       (switch-to-buffer ml-error-buffer)
-      (setq error-message (buffer-string))
-      (kill-buffer)
-      (message error-message))
+      (let ((error-message (buffer-string)))
+        (kill-buffer)
+        (message error-message)))
      (t
       (setq ml-name-dir (concat "~/" ml-name))
       (switch-to-buffer ml-prog-name)
@@ -228,8 +230,8 @@
       (while (search-forward " " nil t)
         (beginning-of-line)
         (re-search-forward "^[ ]*")
-        (setq range (ml-range-of-search " "))
-        (put-text-property (car range) (cdr range) 'invisible t)
-        (end-of-line))
-      (toggle-read-only)
+        (let ((range (ml-range-of-search " ")))
+          (put-text-property (car range) (cdr range) 'invisible t)
+          (end-of-line)))
+      (read-only-mode)
       (goto-line 1)))))
