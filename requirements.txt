@@ -1,0 +1,3 @@
+###### Requirements with Version Specifiers ######
+python-dateutil==2.7.3
+pytz==2019.3
