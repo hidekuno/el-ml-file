@@ -82,6 +82,19 @@
 (define-key ml-grep-mode-map
   " " 'scroll-up-command)
 
+;; (goto-line 1)
+;; :Warning: goto-line is for interactive use only;
+;;           use forward-line instead.
+(defun ml-goto-1st-line ()
+  (forward-line (- (line-number-at-pos))))
+
+;; (replace-string "\r" "")
+;; Warning: replace-string is for interactive use only;
+;;          use search-forward and replace-match instead.
+(defun ml-replace-string-batch()
+  (while (search-forward "\r" nil t)
+    (replace-match "" nil t)))
+
 ;; get range of search
 (defun ml-range-of-search (str)
   (let ((s 0)(e 0))
@@ -105,7 +118,7 @@
     (if (get-buffer ml-prog-name)
         (progn
           (switch-to-buffer ml-prog-name)
-          (goto-line 1)
+          (ml-goto-1st-line)
           (search-forward filename))
       (message "No ml-file"))))
 
@@ -116,7 +129,7 @@
 
   (let ((ref-id (buffer-substring-no-properties (region-beginning)(region-end))))
     (find-file-read-only (concat ml-name-dir "/idx1"))
-    (goto-line 1)
+    (ml-goto-1st-line)
 
     (cond
      ((search-forward ref-id nil t)
@@ -157,7 +170,7 @@
     (find-file-read-only filename)
 
     (switch-to-buffer ml-buffer-name)
-    (goto-line line)
+    (forward-line (- line 1))
     (ml-file-detail-mode)))
 
 ;; grep
@@ -182,17 +195,18 @@
            (ml-grep-mode)
            (message "No matches found"))
           (t
-           (goto-line 1)
-           (replace-string "\r" "")
+           (ml-goto-1st-line)
+
+           (ml-replace-string-batch)
            (sort-lines nil (point-min) (point-max))
 
-           (goto-line 1)
+           (ml-goto-1st-line)
            (beginning-of-line)
            (while (re-search-forward word nil t)
              (let* ((e (point))
                     (s (- e (length word))))
                (overlay-put (make-overlay s e) 'face '(t :inverse-video t))))
-           (goto-line 1)
+           (ml-goto-1st-line)
            (read-only-mode)
            (ml-grep-mode)))))
 
@@ -234,4 +248,4 @@
           (put-text-property (car range) (cdr range) 'invisible t)
           (end-of-line)))
       (read-only-mode)
-      (goto-line 1)))))
+      (ml-goto-1st-line)))))
