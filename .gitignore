@@ -1,1 +1,8 @@
 *.elc
+*.log
+autom4te.cache
+configure
+config.status
+Makefile
+configure.scan
+config.h

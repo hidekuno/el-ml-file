@@ -36,3 +36,15 @@ M-x load-file ~/el-ml-file/ml-file.el
 M-x ml-file
 ```
 <img src="https://user-images.githubusercontent.com/22115777/199161643-56797a9c-9d34-4539-aa20-d3d61e477f12.png" width=60% height=60%>
+
+### byte compile
+```
+cd ~/el-ml-file
+make
+```
+
+### run in Emacs(byte code)
+```
+M-x load-file ~/el-ml-file/ml-file.elc
+M-x ml-file
+```
