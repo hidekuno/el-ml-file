@@ -1,0 +1,14 @@
+#
+# Makefile
+#
+# hidekuno@gmail.com
+#
+TARGET = ml-file.elc
+SRC=ml-file.el
+
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	emacs --batch -f batch-byte-compile $(SRC)
+clean:
+	rm -rf $(TARGET) *.cache configure *.log *.status config.h Makefile
