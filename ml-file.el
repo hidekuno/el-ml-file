@@ -82,6 +82,12 @@
 (define-key ml-grep-mode-map
   " " 'scroll-up-command)
 
+;; file open & read
+(defun ml-file-open(filename)
+  (find-file-read-only filename)
+  (re-search-forward "^$")
+  (ml-file-detail-mode))
+
 ;; (goto-line 1)
 ;; :Warning: goto-line is for interactive use only;
 ;;           use forward-line instead.
@@ -136,8 +142,7 @@
       (beginning-of-line)
       (let ((data-file (ml-substring-of-search ":")))
         (kill-current-buffer)
-        (find-file-read-only (concat ml-name-dir "/" data-file))
-        (ml-file-detail-mode)))
+        (ml-file-open (concat ml-name-dir "/" data-file))))
       (t
        (message "No match message file")
        (kill-current-buffer)))))
@@ -150,8 +155,7 @@
   (unless (= 1 (line-number-at-pos))
     (beginning-of-line)
     (re-search-forward "^[ ]*")
-    (find-file-read-only (ml-substring-of-search " "))
-    (ml-file-detail-mode)))
+    (ml-file-open (ml-substring-of-search " "))))
 
 ;; file view
 (defun ml-grep-link()
