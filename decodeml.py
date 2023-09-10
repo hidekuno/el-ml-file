@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys,email
 from email.header import decode_header
-from email.utils import parsedate_to_datetime
 import argparse
 
 arg_parser = argparse.ArgumentParser()
