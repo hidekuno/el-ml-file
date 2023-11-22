@@ -40,6 +40,8 @@ M-x ml-file
 ### byte compile
 ```
 cd ~/el-ml-file
+autoconf
+./configure
 make
 ```
 
