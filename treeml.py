@@ -142,17 +142,17 @@ def create_tree(rec, top):
             top.add(cache[rec.filename])
 
 
-def treeml():
+def treeml(ml):
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("ml", type=str)
     args = arg_parser.parse_args(sys.argv[1:])
 
     try:
-        os.chdir(os.path.join(os.environ["HOME"], args.ml))
+        os.chdir(os.path.join(os.environ["HOME"], ml))
 
         dates, messages = make_messages()
         make_ref(dates, messages)
-        top = Tree(Message(args.ml))
+        top = Tree(Message(ml))
 
         for k in mails.keys():
             create_tree(mails[k], top)
@@ -163,4 +163,7 @@ def treeml():
 
 
 if __name__ == "__main__":
-    treeml()
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("ml", type=str)
+    args = arg_parser.parse_args(sys.argv[1:])
+    treeml(args.ml)
