@@ -22,6 +22,8 @@ sudo cp el-ml-file/treeml.py /usr/local/bin/.
 ```
 
 ### Get some data and create a file for each article.
+ex.)
+  https://lists.ubuntu.com/archives/ubuntu-jp.mbox/ubuntu-jp.mbox
 
 ### create index
 ```
