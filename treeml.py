@@ -143,10 +143,6 @@ def create_tree(rec, top):
 
 
 def treeml(ml):
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("ml", type=str)
-    args = arg_parser.parse_args(sys.argv[1:])
-
     try:
         os.chdir(os.path.join(os.environ["HOME"], ml))
 
