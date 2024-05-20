@@ -16,7 +16,7 @@
 
 ;; global variable
 (defvar-local ml-prog-name "ml-file")
-(defvar-local ml-tree-prog "treeml.py") ;; install to /usr/local/bin
+(defvar-local ml-tree-prog (concat (getenv "HOME") "/" "el-ml-file" "/" "treeml.py"))
 (defvar-local ml-grep-buffer-name "ml-grep")
 (defvar-local ml-error-buffer "stderr")
 (defvar ml-name-dir "~")
