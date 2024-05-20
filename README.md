@@ -18,7 +18,6 @@ Mailing List thread viewer by Emacs lisp program
 ```
 cd ${HOME}
 git clone https://github.com/hidekuno/el-ml-file
-sudo cp el-ml-file/treeml.py /usr/local/bin/.
 ```
 
 ### Get some data and create a file for each article.
