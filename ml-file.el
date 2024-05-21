@@ -231,7 +231,8 @@
     (while (string= ml-name "")
       (setq ml-name (read-string "Mailing List Name: ")))
 
-    (shell-command (concat ml-tree-prog " " ml-name) ml-prog-name ml-error-buffer)
+    (shell-command (mapconcat #'shell-quote-argument (list ml-tree-prog ml-name) " ")
+                   ml-prog-name ml-error-buffer)
     (delete-other-windows)
     (cond
      ((get-buffer ml-error-buffer)
